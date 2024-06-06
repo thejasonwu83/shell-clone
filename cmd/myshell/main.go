@@ -8,24 +8,53 @@ import (
 	"strings"
 )
 
+func getArgs(input string) []string {
+	input = strings.TrimSpace(input)
+	args := []string{}
+	for input != "" {
+		argEnd := strings.Index(input, " ")
+		if argEnd == -1 { // reached last argument
+			args = append(args, input)
+			break
+		}
+		args = append(args, input[:argEnd])
+		input = strings.TrimSpace(input[argEnd:])
+	}
+	return args
+}
+
+func echo(args []string) {
+	msg := ""
+	for _, arg := range args {
+		msg += arg + " "
+	}
+	msg = strings.TrimSpace(msg)
+	fmt.Fprint(os.Stdout, msg+"\n")
+}
+
+func evalCmd(input string) {
+	args := getArgs(input)
+	switch strings.ToLower(args[0]) {
+	case "exit":
+		if len(args) > 1 {
+			exitStatus, _ := strconv.Atoi(args[1])
+			os.Exit(exitStatus)
+		}
+		os.Exit(0)
+	case "echo":
+		echo(args[1:])
+	default: // unrecognized command
+		fmt.Fprint(os.Stdout, strings.TrimSpace(input)+": command not found\n")
+	}
+}
+
 func main() {
-	// Uncomment this block to pass the first stage
 	fmt.Fprint(os.Stdout, "$ ")
 
-	// Wait for user input
+	// REPL loop
 	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	for err == nil {
-		args := strings.Split(strings.TrimSpace(input), " ")
-		switch strings.ToLower(args[0]) {
-		case "exit":
-			if len(args) > 1 {
-				exitStatus, _ := strconv.Atoi(args[1])
-				os.Exit(exitStatus)
-			}
-			os.Exit(0)
-		default: // unrecognized command
-			fmt.Fprint(os.Stdout, strings.TrimSpace(input)+": command not found\n")
-		}
+		evalCmd(input)
 		fmt.Fprint(os.Stdout, "$ ")
 		input, err = bufio.NewReader(os.Stdin).ReadString('\n')
 	}

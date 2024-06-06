@@ -12,9 +12,13 @@ func main() {
 	fmt.Fprint(os.Stdout, "$ ")
 
 	// Wait for user input
-	input, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-	switch input {
-	default: // unrecognized command
-		fmt.Fprint(os.Stdout, strings.TrimSpace(input)+": command not found\n")
+	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
+	for err == nil {
+		switch input {
+		default: // unrecognized command
+			fmt.Fprint(os.Stdout, strings.TrimSpace(input)+": command not found\n")
+		}
+		fmt.Fprint(os.Stdout, "$ ")
+		input, err = bufio.NewReader(os.Stdin).ReadString('\n')
 	}
 }

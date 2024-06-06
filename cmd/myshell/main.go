@@ -32,6 +32,26 @@ func echo(args []string) {
 	fmt.Fprint(os.Stdout, msg+"\n")
 }
 
+func getType(args []string) {
+	for _, arg := range args {
+		arg = strings.ToLower(arg)
+		msg := ""
+		switch arg {
+		case "echo":
+			msg = "echo is a shell builtin\n"
+		case "exit":
+			msg = "exit is a shell builtin\n"
+		case "type":
+			msg = "type is a shell builtin\n"
+		default:
+			msg = arg + " not found\n"
+		}
+		fmt.Fprint(os.Stdout, msg)
+	}
+}
+
+// TODO: check for valid num args
+
 func evalCmd(input string) {
 	args := getArgs(input)
 	switch strings.ToLower(args[0]) {
@@ -43,6 +63,8 @@ func evalCmd(input string) {
 		os.Exit(0)
 	case "echo":
 		echo(args[1:])
+	case "type":
+		getType(args[1:])
 	default: // unrecognized command
 		fmt.Fprint(os.Stdout, strings.TrimSpace(input)+": command not found\n")
 	}
